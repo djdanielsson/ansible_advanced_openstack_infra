@@ -1,7 +1,7 @@
 --- 
 - name: add repos to provisioned environment 
   hosts: all 
-  gather_facts: false 
+  gather_facts: true 
   become: true 
   vars: 
     repo_files: 
@@ -18,3 +18,10 @@
         group: root 
         mode: '0644' 
       loop: "{{ repo_files }}"
+
+    - name: add IP for db to hosts file for app1
+      lineinfile:
+        path: /etc/hosts
+        insertafter: EOF
+        line: "{{ hostvars['db']['ansible_default_ipv4']['address'] }} appdb1"
+      when: ansible_hostname == 'app1' or ansible_hostname == 'app2'
